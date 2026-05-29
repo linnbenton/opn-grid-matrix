@@ -1,0 +1,19 @@
+{
+  "name": "opn-grid-matrix",
+  "version": "1.0.0",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2"
+  },
+  "description": "",
+  "main": "hardhat.config.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "hardhat": "^2.22.15"
+  }
+}
