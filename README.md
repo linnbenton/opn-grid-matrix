@@ -34,7 +34,7 @@ If the solution matches the target state, the smart contract mints an NFT as pro
 
 ---
 
-## 🌳 System Tree Flow
+🌳 System Tree Flow
 
 User Wallet
 ↓
@@ -56,7 +56,7 @@ Return tokenId
 
 ---
 
-## 🧱 Contract Architecture
+🧱 Contract Architecture
 
 OPNGridPuzzle (ERC721URIStorage)
 │
