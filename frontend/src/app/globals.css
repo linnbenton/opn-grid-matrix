@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tambahkan konfigurasi variable warna & utility kustom lo di sini */
+:root {
+  --cyber-bg: #0d0d11;
+  --iopn-cyan: #00f0ff;
+  --iopn-neon: #39ff14;
+  --cyber-purple: #9d00ff;
+}
+
+body {
+  background-color: var(--cyber-bg);
+  color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Kustom Utility Class untuk Efek Neon Glow (Biar tinggal panggil di komponen) */
+.bg-cyberBg {
+  background-color: var(--cyber-bg);
+}
+
+.text-iopnCyan {
+  color: var(--iopn-cyan);
+}
+
+.text-iopnNeon {
+  color: var(--iopn-neon);
+}
+
+.text-cyberPurple {
+  color: var(--cyber-purple);
+}
+
+.border-iopnCyan {
+  border-color: var(--iopn-cyan);
+}
+
+/* Efek Glow Luar Dalam untuk Kotak Puzzle */
+.shadow-neonCyan {
+  box-shadow:
+    0 0 15px #00f0ff,
+    inset 0 0 5px #00f0ff;
+}
+
+.hover\:shadow-neonCyan:hover {
+  box-shadow:
+    0 0 15px #00f0ff,
+    inset 0 0 5px #00f0ff;
+}
+
+.hover\:bg-iopnCyan\/10:hover {
+  background-color: rgba(0, 240, 255, 0.1);
+}
+
+html,
+body,
+#__next {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background: #020205;
+}
+
+body {
+  position: relative;
+}
