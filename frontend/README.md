@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🤖 OPN Grid Puzzle
 
-## Getting Started
+An on-chain puzzle game where players solve a 3x3 grid challenge to mint an NFT reward. Built for EVM-compatible networks using Solidity and ERC-721 standards.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ⚙️ Core Idea
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Players must solve a predefined 3x3 puzzle configuration.  
+If the solution matches the target state, the smart contract mints an NFT as proof of completion.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- One wallet = one mint
+- Fully on-chain verification
+- NFT reward issued instantly upon success
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🚀 Smart Contract Features
 
-To learn more about Next.js, take a look at the following resources:
+- ERC-721 NFT standard (OpenZeppelin)
+- On-chain puzzle validation
+- Anti double-mint protection
+- Event emission for solved puzzle tracking
+- Metadata URI support for NFT assets
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📊 Performance Flow
 
-## Deploy on Vercel
+- Gas-efficient loop validation (9 iterations only)
+- Minimal storage usage (mapping + uint256 counter)
+- No external oracle dependency
+- Pure deterministic execution (fully on-chain logic)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🌳 System Tree Flow
+
+User Wallet
+↓
+Submit Puzzle Solution (uint8[9])
+↓
+verifyAndMint()
+↓
+Validate hasMinted mapping
+↓
+Compare with targetSolution
+↓
+If valid:
+├── Increment tokenId
+├── Mint NFT (ERC721)
+├── Set TokenURI
+└── Emit PuzzleSolved event
+↓
+Return tokenId
+
+---
+
+## 🧱 Contract Architecture
+
+OPNGridPuzzle (ERC721URIStorage)
+│
+├── hasMinted mapping
+├── targetSolution[9]
+├── \_tokenIds counter
+│
+├── getTargetSolution()
+├── verifyAndMint()
+└── PuzzleSolved event
+
+---
+
+## 🔐 Security Notes
+
+- Prevents multiple mint per wallet
+- Strict array comparison validation
+- No external contract calls (reduces attack surface)
+- Deterministic on-chain execution
+
+---
+
+## 📦 Tech Stack
+
+- Solidity ^0.8.x
+- OpenZeppelin Contracts
+- Hardhat / Remix compatible
+- EVM testnet deployment ready
+
+---
+
+## 🌐 Network Info (OPN Testnet)
+
+- RPC: `https://testnet-rpc.iopn.tech`
+- Explorer: `https://testnet.iopn.tech`
+- Chain ID: 984
+- Currency: OPN
+
+---
+
+## 📜 Contract Info
+
+- Contract Address:
+  0xe495E3b24cBE70FC6Ba08BE82d3719D748EF11Df
+
+---
+
+## 🧪 Status
+
+- Smart contract: deployed ✔
+- Puzzle logic: active ✔
+- NFT minting: functional ✔
