@@ -68,3 +68,7 @@ body,
 body {
   position: relative;
 }
+
+input {
+  -webkit-text-fill-color: white;
+}

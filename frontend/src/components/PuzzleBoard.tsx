@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useWalletClient } from "wagmi";
+import VaultPanel from "./vault/VaultPanel";
 import {
   useAccount,
   useConnect,
@@ -10,6 +12,7 @@ import {
   useChainId,
 } from "wagmi";
 
+// OPN Ecosystem Pillars representation for the puzzle grid
 const OPN_PILLARS: Record<number, string> = {
   1: "Sovereign Staking",
   2: "Mosaic RWA",
@@ -22,11 +25,24 @@ const OPN_PILLARS: Record<number, string> = {
   0: "",
 };
 
+// Winning configuration state for the matrix puzzle
 const TARGET_SOLUTION = [1, 2, 3, 4, 5, 6, 7, 8, 0];
 
 const CONTRACT_ADDRESS = "0xe495E3b24cBE70FC6Ba08BE82d3719D748EF11Df";
 
-export default function PuzzleBoard() {
+interface PuzzleBoardProps {
+  vaultAddress: `0x${string}`;
+  signer: any;
+  userAddress: `0x${string}`;
+}
+
+// Fixed: Destructured the incoming props with strict TypeScript typing to resolve the page.tsx compilation error
+export default function PuzzleBoard({
+  vaultAddress,
+  signer,
+  userAddress,
+}: PuzzleBoardProps) {
+  // ... Your existing state hooks and game logic functions below can remain exactly the same
   /*
   ─────────────────────────────────────────────
   Core States
@@ -35,6 +51,7 @@ export default function PuzzleBoard() {
   const [mounted, setMounted] = useState(false);
   const [grid, setGrid] = useState<number[]>([1, 2, 3, 4, 0, 5, 7, 8, 6]);
   const [isSolved, setIsSolved] = useState(false);
+  const [mintedTokenId, setMintedTokenId] = useState<number | null>(null);
 
   /*
   ─────────────────────────────────────────────
@@ -47,6 +64,7 @@ export default function PuzzleBoard() {
   const { writeContract, isPending, isSuccess } = useWriteContract();
   const chainId = useChainId();
   const isCorrectNetwork = chainId === 2026;
+  const { data: walletClient } = useWalletClient();
 
   /*
   ─────────────────────────────────────────────
@@ -216,98 +234,84 @@ export default function PuzzleBoard() {
   };
 
   return (
-    <div className="fixed inset-0 h-screen w-screen bg-[#050816] text-[#D6E4FF] select-none overflow-hidden flex items-center justify-center">
-      {/* BACKGROUND VIDEO LAYER - Ditempatkan paling atas di kode latar belakang, tanpa mix-blend miring */}
+    <div className="fixed inset-0 h-screen w-screen bg-[#050816] text-[#D6E4FF] select-none overflow-hidden flex items-center justify-center font-mono">
+      {/* BACKGROUND VIDEO LAYER - Immersive atmospheric base */}
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute inset-0 h-full w-full object-cover z-0 pointer-events-none opacity-80 brightness-110 contrast-100"
+        className="absolute inset-0 h-full w-full object-cover z-0 pointer-events-none opacity-40 brightness-75 contrast-125"
       >
         <source src="/bg-wave.mp4" type="video/mp4" />
       </video>
 
-      {/* Efek Gradasi Atmosfer & Grid di Atas Video */}
-      <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_top_left,rgba(36,59,107,0.25),transparent_40%),radial-gradient(circle_at_bottom_right,rgba(58,41,90,0.2),transparent_45%)] pointer-events-none" />
-      <div className="absolute inset-0 z-10 bg-black/10 pointer-events-none" />
-      <div className="absolute inset-0 z-10 bg-[linear-gradient(to_right,rgba(129,140,248,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(129,140,248,0.04)_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-30 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_40%,transparent_100%)] pointer-events-none" />
+      {/* Cyberpunk Lighting & Grid Overlays */}
+      <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_top_left,rgba(36,59,107,0.35),transparent_50%),radial-gradient(circle_at_bottom_right,rgba(58,41,90,0.25),transparent_50%)] pointer-events-none" />
+      <div className="absolute inset-0 z-10 bg-black/30 pointer-events-none" />
+      <div className="absolute inset-0 z-10 bg-[linear-gradient(to_right,rgba(125,211,252,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(125,211,252,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_50%,#000_50%,transparent_100%)] pointer-events-none" />
 
-      {/* Efek Partikel */}
+      {/* Micro-Particle FX System */}
       <div className="absolute inset-0 z-10 overflow-hidden pointer-events-none">
         {[
-          { top: "12%", left: "18%" },
-          { top: "20%", left: "72%" },
-          { top: "34%", left: "55%" },
-          { top: "48%", left: "80%" },
-          { top: "64%", left: "24%" },
-          { top: "72%", left: "60%" },
-          { top: "82%", left: "38%" },
-          { top: "90%", left: "84%" },
+          { top: "15%", left: "12%" },
+          { top: "25%", left: "80%" },
+          { top: "45%", left: "65%" },
+          { top: "60%", left: "20%" },
+          { top: "75%", left: "85%" },
         ].map((particle, index) => (
           <div
             key={index}
-            className="absolute h-1 w-1 rounded-full bg-[#7DD3FC]/30 animate-pulse"
+            className="absolute h-1 w-1 rounded-full bg-[#7DD3FC]/20 animate-pulse"
             style={{ top: particle.top, left: particle.left }}
           />
         ))}
       </div>
 
-      {/* CONTAINER KONTEN UTAMA */}
-      <div className="relative z-20 flex h-[92vh] w-full max-w-[460px] flex-col justify-between px-5">
-        {/* PANEL ATAS */}
-        <div className="flex w-full flex-col items-center">
-          <div className="flex w-full flex-col items-center">
-            <h1 className="bg-gradient-to-r from-[#7DD3FC] via-[#38BDF8] to-[#818CF8] bg-clip-text text-center font-mono text-4xl font-black uppercase tracking-[0.16em] text-transparent drop-shadow-[0_0_30px_rgba(56,189,248,0.35)] md:text-5xl">
-              OPN-GRID MATRIX
-            </h1>
-            <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.32em] text-[#8EA3C7]">
-              Restore Infrastructure Integrity
-            </p>
-          </div>
+      {/* CORE WIDESCREEN WRAPPER */}
+      <div className="relative z-20 flex h-[94vh] w-full max-w-[1150px] flex-col justify-between px-6 py-2">
+        {/* =========================================================================
+            TOP SECTION: UNIFIED GLOBAL HEADER & WALLET MANAGEMENT (STAYS CENTERED)
+            ========================================================================= */}
+        <div className="w-full flex flex-col items-center border-b border-[#243B6B]/30 pb-4">
+          <h1 className="bg-gradient-to-r from-[#7DD3FC] via-[#38BDF8] to-[#818CF8] bg-clip-text text-center text-4xl font-black uppercase tracking-[0.2em] text-transparent drop-shadow-[0_0_30px_rgba(56,189,248,0.4)]">
+            OPN-GRID MATRIX
+          </h1>
+          <p className="mt-1 text-center text-[9px] uppercase tracking-[0.35em] text-[#8EA3C7]">
+            Restore Infrastructure Integrity
+          </p>
 
-          <div className="mt-4 flex h-24 w-full flex-col justify-center items-center">
+          {/* SHARED CENTERED WALLET CONTROLLER */}
+          <div className="mt-4 w-full max-w-[480px]">
             {mounted && isConnected ? (
-              <div className="w-full flex flex-col items-center">
-                <div className="w-full rounded-2xl border border-[#243B6B] bg-[#0B1533]/90 p-4 backdrop-blur-xl">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#8EA3C7]">
-                      OPN Balance
-                    </span>
-                    <span className="font-mono text-sm font-black text-[#D6E4FF]">
-                      {balanceLoading
-                        ? "SYNCING..."
-                        : `${formattedBalance.toFixed(2)} ${tokenSymbol}`}
-                    </span>
-                  </div>
-
-                  <div className="mt-2 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`h-2 w-2 rounded-full ${
-                          hasEnoughOPN
-                            ? "bg-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.9)]"
-                            : "bg-red-400"
-                        }`}
-                      />
-                      <span
-                        className={`font-mono text-[10px] uppercase tracking-[0.16em] ${
-                          hasEnoughOPN ? "text-emerald-300" : "text-red-300"
-                        }`}
-                      >
-                        {hasEnoughOPN
-                          ? "Onchain Verification Ready"
-                          : "Insufficient OPN Balance"}
-                      </span>
-                    </div>
-
-                    <button
-                      onClick={() => disconnect()}
-                      className="rounded-lg border border-red-500/30 bg-red-950/20 px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-red-300 transition-all duration-300 hover:bg-red-500/20 hover:text-white"
+              <div className="w-full rounded-xl border border-[#243B6B] bg-[#0B1533]/90 px-4 py-2.5 backdrop-blur-xl flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] uppercase tracking-wider text-[#8EA3C7]">
+                    Balance:
+                  </span>
+                  <span className="text-xs font-bold text-[#D6E4FF]">
+                    {balanceLoading
+                      ? "SYNCING..."
+                      : `${formattedBalance.toFixed(2)} ${tokenSymbol}`}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5">
+                    <div
+                      className={`h-1.5 w-1.5 rounded-full ${hasEnoughOPN ? "bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" : "bg-red-400"}`}
+                    />
+                    <span
+                      className={`text-[9px] uppercase tracking-wider ${hasEnoughOPN ? "text-emerald-400" : "text-red-400"}`}
                     >
-                      Disconnect ({address?.slice(0, 4)}...{address?.slice(-4)})
-                    </button>
+                      {hasEnoughOPN ? "Verified" : "Low OPN"}
+                    </span>
                   </div>
+                  <button
+                    onClick={() => disconnect()}
+                    className="rounded-md border border-red-500/30 bg-red-950/20 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-red-400 hover:bg-red-500/20 hover:text-white transition-all"
+                  >
+                    Disconnect ({address?.slice(0, 4)}...{address?.slice(-4)})
+                  </button>
                 </div>
               </div>
             ) : (
@@ -315,52 +319,99 @@ export default function PuzzleBoard() {
               !isConnected && (
                 <button
                   onClick={() => connect({ connector: connectors[0] })}
-                  className="relative w-full overflow-hidden rounded-2xl border border-[#7DD3FC]/40 bg-[#18214A] py-4 font-mono text-sm font-black uppercase tracking-[0.25em] text-[#D6E4FF] shadow-[0_0_40px_rgba(125,211,252,0.12)] transition-all duration-300 hover:border-[#7DD3FC] hover:bg-[#243B6B] hover:shadow-[0_0_50px_rgba(125,211,252,0.22)]"
+                  className="w-full py-2.5 rounded-xl border border-[#7DD3FC]/30 bg-[#18214A] text-[10px] font-black uppercase tracking-[0.25em] text-[#D6E4FF] hover:bg-[#243B6B] hover:border-[#7DD3FC] transition-all duration-300 shadow-[0_0_20px_rgba(125,211,252,0.1)]"
                 >
-                  CONNECT WALLET
+                  CONNECT WEB3 WALLET
                 </button>
               )
             )}
           </div>
         </div>
 
-        {/* PAPAN PUZZLE GRID */}
-        <div className="relative grid aspect-square w-full grid-cols-3 gap-3 overflow-hidden rounded-[28px] border border-[#243B6B] bg-[#0B1533]/90 p-4 shadow-[0_25px_80px_rgba(0,0,0,0.65)] backdrop-blur-2xl">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(125,211,252,0.08),transparent_60%)]" />
+        {/* =========================================================================
+            MIDDLE SECTION: TWO-COLUMN TACTICAL VIEW (MATCHING THE RED BOXES)
+            ========================================================================= */}
+        <div className="flex flex-row items-center justify-center gap-36 px-10 my-auto w-full max-w-[1400px] mx-auto max-h-[50vh]">
+          {/* LEFT RED BOX COMPARTMENT: VAULT INTERACTION PANEL */}
+          <div className="w-1/2 max-w-[420px] aspect-square bg-[#0B1533]/70 border border-[#243B6B]/60 rounded-[24px] p-8 backdrop-blur-2xl shadow-[inset_0_0_25px_rgba(36,59,107,0.15)] relative overflow-hidden flex flex-col justify-center">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-[#38BDF8]/30 to-transparent" />
 
-          {grid.map((tile, index) => (
-            <button
-              key={index}
-              onClick={() => handleTileClick(index)}
-              className={`group relative flex aspect-square w-full flex-col items-center justify-center overflow-hidden rounded-2xl border text-center transition-all duration-300
-              ${
-                tile === 0
-                  ? "border-dashed border-[#243B6B] bg-[#050816]/60"
-                  : isSolved
-                    ? "border-[#7DD3FC]/60 bg-[#18214A] shadow-[0_0_35px_rgba(125,211,252,0.22)]"
-                    : "border-[#243B6B] bg-[#18214A]/95 hover:border-[#7DD3FC]/40 hover:bg-[#243B6B]/90 hover:shadow-[0_0_25px_rgba(125,211,252,0.14)]"
-              }
-            `}
+            {/* Ultra-maximized structural layout for larger internal VaultPanel elements */}
+            <div
+              className="w-full h-full flex flex-col justify-start overflow-y-auto pr-2 space-y-4
+  [&_h2]:text-2xl
+  [&_h2]:font-black
+  [&_h2]:mb-3
+  [&_p]:text-base
+  [&_p]:my-1
+  [&_input]:w-full
+  [&_input]:bg-[#050816]/90
+  [&_input]:border-[#243B6B]
+  [&_input]:rounded-xl
+  [&_input]:px-4
+  [&_input]:py-3.5
+  [&_button]:w-full
+  [&_button]:py-3
+  [&_button]:rounded-xl
+  [&_button]:mt-2
+"
             >
-              {tile !== 0 && (
-                <>
-                  <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-[radial-gradient(circle_at_top,rgba(125,211,252,0.14),transparent_70%)]" />
-                  <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-2">
-                    <span className="mb-2 font-mono text-[13px] font-bold tracking-[0.15em] text-[#8EA3C7]/70">
-                      #{tile.toString().padStart(2, "0")}
-                    </span>
-                    <span className="block text-center font-mono text-[15px] font-black uppercase leading-tight tracking-tight text-[#D6E4FF] drop-shadow-[0_0_10px_rgba(125,211,252,0.25)] sm:text-[16px] md:text-[18px]">
-                      {OPN_PILLARS[tile]}
-                    </span>
-                  </div>
-                </>
-              )}
-            </button>
-          ))}
+              <VaultPanel
+                vaultAddress={vaultAddress}
+                signer={null}
+                userAddress={userAddress}
+              />
+            </div>
+          </div>
+
+          {/* RIGHT RED BOX COMPARTMENT: INTERACTIVE PUZZLE GRID MATRIX */}
+          <div className="w-1/2 max-w-[420px] flex items-center justify-center">
+            <div className="relative grid aspect-square w-full grid-cols-3 gap-2.5 overflow-hidden rounded-[24px] border border-[#243B6B] bg-[#0B1533]/80 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.7)] backdrop-blur-2xl">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(125,211,252,0.06),transparent_60%)]" />
+
+              {grid.map((tile, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleTileClick(index)}
+                  className={`group relative flex aspect-square w-full flex-col items-center justify-center overflow-hidden rounded-xl border text-center transition-all duration-300
+                  ${
+                    tile === 0
+                      ? "border-dashed border-[#243B6B]/40 bg-[#050816]/80 shadow-[inset_0_0_15px_rgba(0,0,0,0.6)]"
+                      : isSolved
+                        ? "border-emerald-500/50 bg-[#18214A] shadow-[0_0_25px_rgba(16,185,129,0.2)]"
+                        : "border-[#243B6B] bg-[#18214A]/90 hover:border-[#38BDF8]/60 hover:bg-[#243B6B]/80 active:scale-98"
+                  }
+                `}
+                >
+                  {tile !== 0 && (
+                    <>
+                      {/* Technical Cyberpunk Corner Overlays */}
+                      <span className="absolute top-0 left-0 w-1 h-1 border-t border-l border-neutral-700/40 group-hover:border-[#38BDF8] transition-colors" />
+                      <span className="absolute top-0 right-0 w-1 h-1 border-t border-r border-neutral-700/40 group-hover:border-[#38BDF8] transition-colors" />
+                      <span className="absolute bottom-0 left-0 w-1 h-1 border-b border-l border-neutral-700/40 group-hover:border-[#38BDF8] transition-colors" />
+                      <span className="absolute bottom-0 right-0 w-1 h-1 border-b border-r border-neutral-700/40 group-hover:border-[#38BDF8] transition-colors" />
+
+                      <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.08),transparent_70%)]" />
+                      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center p-1.5">
+                        <span className="text-[10px] font-bold tracking-wider text-[#8EA3C7]/40 group-hover:text-[#38BDF8]/70 mb-0.5">
+                          #{tile.toString().padStart(2, "0")}
+                        </span>
+                        <span className="block text-center font-mono text-[13px] md:text-[14px] font-black uppercase leading-tight tracking-wide text-[#D6E4FF] group-hover:text-white drop-shadow-[0_0_8px_rgba(214,228,255,0.15)]">
+                          {OPN_PILLARS[tile]}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* PANEL BAWAH / BUTTON MINT */}
-        <div className="flex w-full flex-col items-center gap-4">
+        {/* =========================================================================
+            BOTTOM SECTION: PROTOCOL SETTLEMENT ACTION & MINT LOGIC
+            ========================================================================= */}
+        <div className="flex w-full flex-col items-center gap-2 border-t border-[#243B6B]/20 pt-3">
           <button
             onClick={handleMint}
             disabled={
@@ -372,11 +423,11 @@ export default function PuzzleBoard() {
               isSuccess
             }
             className={`
-              w-full rounded-2xl border py-5 font-mono text-sm font-black uppercase tracking-[0.22em] transition-all duration-300
+              w-full max-w-[480px] rounded-xl border py-3.5 font-mono text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 shadow-md active:scale-99
               ${
                 mounted && isSolved && isConnected && hasEnoughOPN
-                  ? "border-[#7DD3FC]/50 bg-[#18214A] text-[#D6E4FF] shadow-[0_0_40px_rgba(16,185,129,0.16)] hover:bg-emerald-500/15 hover:shadow-[0_0_40px_rgba(125,211,252,0.18)]"
-                  : "border-[#243B6B] bg-[#0B1533]/90 text-[#8EA3C7]/50 cursor-not-allowed"
+                  ? "border-emerald-500/40 bg-[#18214A] text-[#D6E4FF] hover:bg-emerald-500/10 hover:border-emerald-400 hover:shadow-[0_0_25px_rgba(16,185,129,0.2)]"
+                  : "border-[#243B6B] bg-[#0B1533]/60 text-[#8EA3C7]/40 cursor-not-allowed"
               }
             `}
           >
@@ -399,7 +450,7 @@ export default function PuzzleBoard() {
 
           <button
             onClick={() => setGrid([1, 2, 3, 4, 5, 6, 7, 8, 0])}
-            className="font-mono text-[9px] uppercase tracking-[0.15em] text-slate-500/60 transition-all duration-300 hover:text-slate-300 pb-1"
+            className="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-500/40 transition-all duration-300 hover:text-[#38BDF8]"
           >
             [ DEV MODE : AUTO SOLVE ]
           </button>
