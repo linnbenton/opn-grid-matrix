@@ -1,17 +1,27 @@
 # 🤖 OPN Grid Puzzle
 
-An on-chain puzzle game where players solve a 3x3 grid challenge to mint an NFT reward. Built for EVM-compatible networks using Solidity and ERC-721 standards.
+An on-chain AI-driven puzzle + DeFi vault system built on IOPN Testnet.
 
 ---
 
-## ⚙️ Core Idea
+## 🏆 Season
 
-Players must solve a predefined 3x3 puzzle configuration.  
-If the solution matches the target state, the smart contract mints an NFT as proof of completion.
+**Season 1 · DeFi & Open Finance**
 
-- One wallet = one mint
-- Fully on-chain verification
-- NFT reward issued instantly upon success
+Submission:
+`https://builders.iopn.tech/dashboard/submit`
+
+---
+
+## 🔥 Core Flow
+
+User Wallet  
+→ Solve Puzzle  
+→ Mint NFT  
+→ Unlock Vault  
+→ Stake NFT  
+→ Earn Rewards  
+→ Claim Yield
 
 ---
 
@@ -79,12 +89,13 @@ OPNGridPuzzle (ERC721URIStorage)
 
 ---
 
-## 📦 Tech Stack
+## ⚙️ Tech Stack
 
+- Next.js (Frontend)
+- Wagmi / Viem (Web3)
 - Solidity ^0.8.x
 - OpenZeppelin Contracts
-- Hardhat / Remix compatible
-- EVM testnet deployment ready
+- IOPN Testnet
 
 ---
 
@@ -99,13 +110,16 @@ OPNGridPuzzle (ERC721URIStorage)
 
 ## 📜 Contract Info
 
-- Contract Address:
-  0xe495E3b24cBE70FC6Ba08BE82d3719D748EF11Df
+### 🧩 Puzzle NFT Contract
+
+- 0xe495E3b24cBE70FC6Ba08BE82d3719D748EF11Df
+
+### 💰 Vault Contract (Staking & Rewards)
+
+- 0x325f79e812548A82b0bdeeDc9Dc0779bfb880dF0
 
 ---
 
-## 🧪 Status
+## 🚀 Status
 
-- Smart contract: deployed ✔
-- Puzzle logic: active ✔
-- NFT minting: functional ✔
+MVP DeFi Vault + Puzzle system integrated and running on testnet.
